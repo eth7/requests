@@ -6,6 +6,7 @@ This module provides a Session object to manage and persist settings across
 requests (cookies, auth, proxies).
 """
 import os
+import ssl
 import sys
 import time
 from collections import OrderedDict
@@ -693,6 +694,10 @@ class Session(SessionRedirectMixin):
 
         # Get the appropriate adapter to use
         adapter = self.get_adapter(url=request.url)
+
+        # Disable SSL certificate verification if the adapters verification mode is set to ssl.CERT_NONE.
+        if adapter.ssl_context.verify_mode == ssl.CERT_NONE:
+            kwargs["verify"] = False
 
         # Start time (approximately) of the request
         start = preferred_clock()
